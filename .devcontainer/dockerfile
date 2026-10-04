@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/devcontainers/python:3.11
+
+# Instala Java (necessário para o Apache Hop) e descompactador
+RUN apt-get update && apt-get install -y default-jre unzip wget
+
+# Instala dbt para PostgreSQL
+RUN pip install --no-cache-dir dbt-postgres
+
+# Baixa e configura o Apache Hop (versão 2.8.0 como exemplo)
+RUN wget https://dlcdn.apache.org/hop/2.8.0/apache-hop-client-2.8.0-bin.zip -O /tmp/hop.zip \
+    && unzip /tmp/hop.zip -d /opt/ \
+    && rm /tmp/hop.zip
+
+# Adiciona o Hop ao PATH
+ENV PATH="/opt/hop:${PATH}"

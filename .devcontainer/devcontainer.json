@@ -1,0 +1,16 @@
+{
+  "name": "Data Engineer VM",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/teste-tecnico",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "innoverio.vscode-dbt-power-user",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg"
+      ]
+    }
+  }
+}

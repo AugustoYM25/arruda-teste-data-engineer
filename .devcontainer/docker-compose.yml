@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Sua "VM" conectada ao VS Code
+  workspace:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/workspaces/teste-tecnico:cached
+    command: sleep infinity
+    networks:
+      - data_network
+
+  # Banco de Origem (Northwind)
+  db_source:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: northwind
+    ports:
+      - "5432:5432"
+    # Mapeie o script SQL do repositório indicado no teste para popular o banco
+    volumes:
+      - ../northwind_psql/northwind.sql:/docker-entrypoint-initdb.d/northwind.sql
+    networks:
+      - data_network
+
+  # Banco de Destino (Data Warehouse)
+  db_target:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: dw_user
+      POSTGRES_PASSWORD: dw_password
+      POSTGRES_DB: arruda_dw
+    ports:
+      - "5433:5432"
+    networks:
+      - data_network
+
+networks:
+  data_network:
