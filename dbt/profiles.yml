@@ -1,0 +1,13 @@
+dbt_arruda:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: db_target
+      user: dw_user
+      password: dw_password
+      port: 5432
+      dbname: arruda_dw
+      schema: silver
+      threads: 4
+      keepalives_idle: 0
