@@ -4,7 +4,7 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Containerização:** Docker & Docker Compose / VS Code Dev Containers
 * **Orquestração & Ingestão (ETL):** Apache Hop 
@@ -14,7 +14,7 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 ---
 
-## 🚀 Como Executar o Projeto
+##  Como Executar o Projeto
 
 ### Pré-requisitos
 * Docker e Docker Desktop instalados
@@ -24,7 +24,7 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 1. **Clonar o Repositório:**
    ```bash
-   git clone <url-do-repositorio>
+   git clone https://github.com/AugustoYM25/arruda-teste-data-engineer
    cd teste-tecnico
    ```
 
@@ -35,7 +35,6 @@ Este repositório contém a solução do teste técnico para engenharia de dados
    ```
 
 3. **Subir os Containers:**
-   * **Via VS Code (Recomendado):** Abra a pasta do projeto no VS Code, pressione `F1` (ou `Ctrl+Shift+P`), selecione `Dev Containers: Reopen in Container`.
    * **Via Terminal:**
      ```bash
      docker compose -f .devcontainer/docker-compose.yml up -d
@@ -61,7 +60,7 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 ---
 
-## 🏗️ Decisões Tomadas
+## Decisões Tomadas
 
 1. **Arquitetura Containerizada & Isolada:**
    * Toda a infraestrutura roda via Docker Compose com dois bancos de dados isolados para simular um ambiente real de ELT/ETL (Banco Transacional x Data Warehouse).
@@ -78,28 +77,24 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 ---
 
-## 🔍 Inconsistências Encontradas e Tratamentos
+##  Inconsistências Encontradas e Tratamentos
 
 | Entidade / Tabela | Inconsistência Encontrada | Tratamento Aplicado |
 | :--- | :--- | :--- |
-| **Campos de Texto / String** | Espaços em branco sobressalentes nas pontas (*leading/trailing spaces*) e inconsistências de caixa (*case sensitivity*). | Aplicação de funções `TRIM()` e padronização para caixa alta/baixa via dbt/Hop. |
+ (*case sensitivity*). | Aplicação de funções `TRIM()` e padronização para caixa alta/baixa via dbt/Hop. |
 | **Registros Nulos (Valores Ausentes)** | Colunas de endereço/região (`Region`, `PostalCode`) com valores `NULL` no banco Northwind. | Tratados na camada de staging do dbt substituindo nulos por valores padrão (ex: `'N/A'` ou `'Não Informado'`). |
 | **Tipagem de Dados** | Datas armazenadas em formato genérico (`VARCHAR` ou `TIMESTAMP` sem fuso). | Conversão e *casting* explícito para tipos `DATE` / `TIMESTAMP` padronizados no PostgreSQL. |
 | **Chaves Estrangeiras Órfãs** | Registros sem vínculo direto na tabela pai. | Aplicação de validações e testes de integridade referencial via `dbt test`. |
 
 ---
 
-## 🔮 O que faria com mais tempo
+## O que faria com mais tempo
 
 1. **Orquestração Automatizada:**
    * Implementação de uma ferramenta de orquestração (como Apache Airflow ou Dagster) ou agendador nativo do Hop para rodar a esteira completa (Hop -> dbt -> dbt test) em schedules definidos.
 
-2. **Qualidade de Dados Avançada & Observabilidade:**
-   * Ampliação da suíte de testes com a biblioteca **Great Expectations** ou pacotes estendidos do dbt (`dbt_expectations`).
-   * Adição de logs de execução gravados em tabela de auditoria para monitoramento de volume de linhas e tempo de processamento.
-
-3. **Carga Incremental:**
+2. **Carga Incremental:**
    * Evolução das pipelines de carga do Apache Hop e dos modelos dbt para utilizarem estratégia de carga incremental baseada em marca d'água (*Watermark* / `updated_at`), em vez de *Full Refresh*.
 
-4. **Visualização de Dados:**
+3. **Visualização de Dados:**
    * Conexão de uma ferramenta de BI (*Metabase* ou *Superset*) via container para expor dashboards analíticos diretamente a partir do modelo dimensional gerado pelo dbt.
