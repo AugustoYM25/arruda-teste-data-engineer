@@ -2,6 +2,9 @@ version: 2
 
 sources:
   - name: bronze
-    schema: bronze
+    description: "Tabelas brutas (raw) extraídas do banco Northwind."
     tables:
       - name: raw_customers
+      - name: raw_orders
+      - name: raw_order_details
+      - name: raw_products

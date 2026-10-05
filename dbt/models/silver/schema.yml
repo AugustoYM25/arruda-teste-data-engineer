@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Tabela tratada de clientes."
+    columns:
+      - name: customer_id
+        description: "Chave primária do cliente."
+        tests:
+          - unique
+          - not_null
+
+      - name: company_name
+        description: "Nome da empresa do cliente (atributo de apoio)."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: stg_orders
+    description: "Cabeçalhos de ordens de venda."
+    columns:
+      - name: order_id
+        description: "Chave primária do pedido."
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: "Chave estrangeira para o cliente."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: order_date
+        description: "Data em que o pedido foi realizado."
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: "Catálogo de produtos."
+    columns:
+      - name: product_id
+        description: "Chave primária do produto."
+        tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: "Nome do produto."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+      - name: unit_price
+        description: "Preço unitário base."
+        tests:
+          - not_null
+
+  - name: stg_order_details
+    description: "Itens dos pedidos."
+    columns:
+      - name: order_id
+        description: "Chave estrangeira da ordem."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        description: "Chave estrangeira do produto."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: quantity
+        description: "Quantidade do item."
+        tests:
+          - not_null
+
+      - name: unit_price
+        description: "Preço praticado na venda."
+        tests:
+          - not_null
+
+      - name: discount
+        description: "Percentual de desconto."
+        tests:
+          - not_null

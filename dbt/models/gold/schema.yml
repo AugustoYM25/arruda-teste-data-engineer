@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: dm_cliente
+    description: "Dimensão de Clientes."
+    columns:
+      - name: customer_id
+        description: "Chave primária."
+        tests:
+          - unique
+          - not_null
+      - name: company_name
+        description: "Razão social / nome fantasia."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: dm_produto
+    description: "Dimensão de Produtos."
+    columns:
+      - name: product_id
+        description: "Chave primária."
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: "Nome do produto."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: dm_calendario
+    description: "Dimensão do Tempo."
+    columns:
+      - name: data
+        description: "Chave primária temporal."
+        tests:
+          - unique
+          - not_null
+      - name: ano
+        description: "Ano civil."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: mes
+        description: "Número do mês."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: ft_vendas
+    description: "Fato de Vendas (grão: item do pedido)."
+    columns:
+      - name: customer_id
+        description: "FK para dm_cliente."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dm_cliente')
+                field: customer_id
+      - name: product_id
+        description: "FK para dm_produto."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dm_produto')
+                field: product_id
+      - name: data_pedido
+        description: "FK para dm_calendario."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dm_calendario')
+                field: data
+      - name: order_id
+        description: "Identificador da ordem de venda."
+        tests:
+          - not_null
+      - name: quantidade
+        description: "Métrica de quantidade."
+        tests:
+          - not_null
+      - name: valor_bruto
+        description: "Métrica financeira bruta."
+        tests:
+          - not_null
+      - name: valor_liquido
+        description: "Métrica financeira líquida."
+        tests:
+          - not_null
