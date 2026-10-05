@@ -79,12 +79,12 @@ Este repositório contém a solução do teste técnico para engenharia de dados
 
 ##  Inconsistências Encontradas e Tratamentos
 
-| Entidade / Tabela | Inconsistência Encontrada | Tratamento Aplicado |
+| Entidade / Tabela | Inconsistência Encontrada / Risco | Tratamento Aplicado |
 | :--- | :--- | :--- |
-| **Campos de Texto / String** | Espaços em branco sobressalentes nas pontas (*leading/trailing spaces*) e inconsistências de caixa (*case sensitivity*). | Aplicação de funções `TRIM()` e padronização para caixa alta/baixa via dbt/Hop. |
-| **Registros Nulos (Valores Ausentes)** | Colunas de endereço/região (`Region`, `PostalCode`) com valores `NULL` no banco Northwind. | Tratados na camada de staging do dbt substituindo nulos por valores padrão (ex: `'N/A'` ou `'Não Informado'`). |
-| **Tipagem de Dados** | Datas armazenadas em formato genérico (`VARCHAR` ou `TIMESTAMP` sem fuso). | Conversão e *casting* explícito para tipos `DATE` / `TIMESTAMP` padronizados no PostgreSQL. |
-| **Chaves Estrangeiras Órfãs** | Registros sem vínculo direto na tabela pai. | Aplicação de validações e testes de integridade referencial via `dbt test`. |
+| **Geral (Strings)** | Risco de inconsistência por espaços nas pontas e diferença de caixa (*case sensitivity*). | Aplicação preventiva de `TRIM()` e padronização de nomenclatura no dbt. |
+| **Endereços / Regiões** | Colunas com valores nulos (`NULL`) em campos de texto (`Region`, `PostalCode`). | Tratados na camada de staging substituindo nulos por valores padrão (ex: `'N/A'`). |
+| **Tipagem e Datas** | Datas armazenadas sem formato padronizado no destino. | *Casting* explícito para o tipo `DATE` / `TIMESTAMP` no PostgreSQL. |
+| **Modelagem / Integridade** | Risco de quebra de integridade referencial nas junções do modelo dimensional. | Criação de testes de integridade referencial (`unique`, `not_null`, `relationships`) via `dbt test`. |
 
 ---
 
