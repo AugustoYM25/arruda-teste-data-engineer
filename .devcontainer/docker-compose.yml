@@ -1,48 +1,66 @@
 services:
-  # O seu ambiente de desenvolvimento VS Code (Python e dbt)
+  # (Python e dbt)
   workspace:
     image: mcr.microsoft.com/devcontainers/python:3.11
     volumes:
       - ../:/workspaces/teste-tecnico:cached
     command: /bin/sh -c "pip install --no-cache-dir dbt-postgres && sleep infinity"
+    environment:
+      # Variáveis para o dbt
+      DBT_HOST: db_target
+      DBT_PORT: 5432
+      DBT_USER: ${TARGET_DB_USER}
+      DBT_PASSWORD: ${TARGET_DB_PASSWORD}
+      DBT_DBNAME: ${TARGET_DB_NAME}
     networks:
       - data_network
 
-  # O contêiner oficial do Apache Hop
+  # Apache Hop
   hop:
-      image: apache/hop-web:latest
-      environment:
-        HOP_LOG_LEVEL: Basic
-      ports:
-        - "8080:8080"
-      volumes:
-        - ../:/workspaces/teste-tecnico
-      networks:
-        - data_network
+    image: apache/hop-web:latest
+    environment:
+      HOP_LOG_LEVEL: ${HOP_LOG_LEVEL}
+      # Variáveis injetadas no Hop para uso nas Relational Database Connections
+      SOURCE_DB_HOST: db_source
+      SOURCE_DB_PORT: 5432
+      SOURCE_DB_USER: ${SOURCE_DB_USER}
+      SOURCE_DB_PASSWORD: ${SOURCE_DB_PASSWORD}
+      SOURCE_DB_NAME: ${SOURCE_DB_NAME}
+      TARGET_DB_HOST: db_target
+      TARGET_DB_PORT: 5432
+      TARGET_DB_USER: ${TARGET_DB_USER}
+      TARGET_DB_PASSWORD: ${TARGET_DB_PASSWORD}
+      TARGET_DB_NAME: ${TARGET_DB_NAME}
+    ports:
+      - "${HOP_PORT}:8080"
+    volumes:
+      - ../:/workspaces/teste-tecnico
+    networks:
+      - data_network
 
   # Banco de Origem (Northwind)
   db_source:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: northwind
+      POSTGRES_USER: ${SOURCE_DB_USER}
+      POSTGRES_PASSWORD: ${SOURCE_DB_PASSWORD}
+      POSTGRES_DB: ${SOURCE_DB_NAME}
     ports:
-      - "5432:5432"
+      - "${SOURCE_DB_PORT}:5432"
     volumes:
       - ../northwind.sql:/docker-entrypoint-initdb.d/northwind.sql
     networks:
       - data_network
 
-  # Banco de Destino (Data Warehouse Arruda)
+  # Banco de Destino (Data Warehouse)
   db_target:
     image: postgres:15
     environment:
-      POSTGRES_USER: dw_user
-      POSTGRES_PASSWORD: dw_password
-      POSTGRES_DB: arruda_dw
+      POSTGRES_USER: ${TARGET_DB_USER}
+      POSTGRES_PASSWORD: ${TARGET_DB_PASSWORD}
+      POSTGRES_DB: ${TARGET_DB_NAME}
     ports:
-      - "5433:5432"
+      - "${TARGET_DB_PORT}:5432"
     networks:
       - data_network
 
